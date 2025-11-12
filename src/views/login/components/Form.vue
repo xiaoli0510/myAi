@@ -2,19 +2,13 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { ArrowLeft } from 'lucide-vue-next';
 import { reactive, ref } from 'vue';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card'
-import { toast } from 'vue-sonner'
-import { useRoute, useRouter } from 'vue-router';
+import { useToast } from "@/components/ui/toast/use-toast"
+import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/user';
+import { apiRegister } from '@/apis/user';
 
+const { toast } = useToast()
 const CardType = ref('login') // 面板类型
 
 // 登录参数
@@ -28,36 +22,38 @@ const isLoading = ref(false) // 受否正在发送验证码
 
 // 登录
 const router = useRouter()
+const userStore = useUserStore();
 const login = (email?: string, pwd?: string) => {
-    console.log(3);
     const params = {
         ...form,
         Account: email,
         Password: pwd,
     }
-    const emailRegex = /^[a-zA-Z0-9-]+@[a-zA-Z0-9-]+\.\w{2,6}$/
+    const emailRegex = /^(?:[\w+-]+)@(?:[\w+-]+)\.(?:\w{2,})/
     if (!emailRegex.test(params.Account)) {
-        return toast.error('请输入有效邮箱')
-    }
-    console.log(22222);
-
-    if (params.Account === 'admin@163.com' && params.Password === '123456') {
-        console.log(11111111111);
-        router.replace('/');
+        return toast({
+            description: '请输入有效邮箱',
+        });
     }
 
+    userStore.login(params).then(() => {
+        router.push('/')
+    })
 }
 
-const countdownNum = ref(60) // 倒计时
 // 注册
 const registerForm = reactive({
-    Username: '',
-    ConfirmPassword: '',
-    Email: '',
-    Password: '',
+    Username: 'admin',
+    ConfirmPassword: '123456',
+    Email: 'admin@163.com',
+    Password: '123456',
 })
-// 注册跳转获取验证码
-const registerGetVerifyCodeM = () => {
+// 注册
+const register = () => {
+    apiRegister(registerForm).then(res => {
+        CardType.value = 'login'
+        //注册成功后跳转到登录页面
+    })
 }
 
 // 验证是否有账号
@@ -87,16 +83,12 @@ const VerifyEmailM = () => {
                 <div class="grid gap-2">
                     <div class="flex justify-between items-center">
                         <Label>Password</Label>
-                        <div class="text-center cursor-pointer text-xs hover:underline"
-                            @click="CardType = 'VerifyEmail'">
-                            Forgot you Password?
-                        </div>
                     </div>
                     <Input class="w-full" type="password" autocomplete="new-password" maxlength="50"
                         v-model="form.Password" required />
                 </div>
-                <Button class="w-full mt-5" @click="login" :disabled="isLoading">
-                    {{ isLoading ? 'Loading...' : 'Login111' }}
+                <Button class="w-full mt-5" @click="login(form.Account, form.Password)" :disabled="isLoading">
+                    {{ isLoading ? 'Loading...' : 'Login' }}
                 </Button>
             </div>
             <div class="text-center text-sm">
@@ -139,8 +131,8 @@ const VerifyEmailM = () => {
                 </div>
                 <div>
                     <Button v-if="isLoading" class="w-full mt-2" disabled> loading... </Button>
-                    <Button v-else class="w-full mt-2" @click="registerGetVerifyCodeM" :disabled="countdownNum != 60">
-                        {{ countdownNum != 60 ? countdownNum + 's' : 'Sign Up' }}
+                    <Button v-else class="w-full mt-2" @click="register">
+                        Sign Up
                     </Button>
                 </div>
             </div>
@@ -151,28 +143,5 @@ const VerifyEmailM = () => {
                 <a href="#" target="_blank" class="text-blue-500">Privacy Policy</a>.
             </div>
         </div>
-
-        <!-- 4-重置密码验证邮箱 -->
-        <Card v-if="CardType === 'VerifyEmail'"
-            class="w-full w-[450px] lg:border-0 min-w-80 text-center h-3/4 flex flex-col justify-center">
-            <CardHeader>
-                <CardTitle class="text-2xl">Password recovery</CardTitle>
-                <br />
-                <CardDescription class="mt-5">Please enter your email and we'll send you a password recovery code
-                </CardDescription>
-            </CardHeader>
-            <CardContent class="grid gap-4">
-                <div class="grid gap-2 mt-2">
-                    <Input class="w-full" type="text" maxlength="50" placeholder="Email" v-model="VerifyEmailForm.Email"
-                        required />
-                </div>
-                <Button class="w-full mt-2" @click="VerifyEmailM" :disabled="isLoading">
-                    {{ isLoading ? 'Loading...' : 'Reset password' }}
-                </Button>
-            </CardContent>
-            <CardFooter class="mt-2">
-                <ArrowLeft class="cursor-pointer" @click="CardType = 'login'" />
-            </CardFooter>
-        </Card>
     </div>
 </template>
