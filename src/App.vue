@@ -5,12 +5,14 @@ import { onMounted } from 'vue';
 import { useUserStore } from './stores/user';
 const { getCache } = useLocalCache()
 const { getUserInfo } = useUserStore()
+const userStore = useUserStore()
 
 onMounted(() => {
   const token = getCache('token');
-  console.log('token', token);
   if (token) {
     getUserInfo();
+  } else {
+    userStore.logout();
   }
 })
 </script>

@@ -1,6 +1,7 @@
 import { IResUserInfo } from "@/apis/model/user";
 import { apiLogin, apiUserInfo } from "@/apis/user";
 import { useLocalCache } from "@/hooks/useLocalCache";
+import router from "@/router";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 const { setCache, removeCache } = useLocalCache();
@@ -29,7 +30,9 @@ export const useUserStore = defineStore("user", () => {
   };
 
   const logout = () => {
+    userInfo.value = null;
     removeCache("token");
+    router.push("/login");
   };
   return {
     login,

@@ -39,7 +39,6 @@ const items = [
 const userStore = useUserStore()
 
 const signOut = () => {
-    userStore.userInfo = null;
     userStore.logout();
 }
 </script>
