@@ -1,5 +1,5 @@
+//用户登录注册+获取用户信息接口
 export default [
-  //用户登录接口
   {
     url: "/api/user/login",
     method: "POST",
