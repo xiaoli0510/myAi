@@ -26,12 +26,12 @@ const { getCache } = useLocalCache()
 const items = [
     {
         title: "首页",
-        url: "#",
+        url: "/",
         icon: Home,
     },
     {
-        title: "Settings",
-        url: "#",
+        title: "Creation",
+        url: "/creation",
         icon: Settings,
     },
 ];
@@ -52,10 +52,10 @@ const signOut = () => {
                     <SidebarMenu>
                         <SidebarMenuItem v-for="item in items" :key="item.title">
                             <SidebarMenuButton asChild>
-                                <a :href="item.url">
+                                <router-link :to="item.url">
                                     <component :is="item.icon" />
                                     <span>{{ item.title }}</span>
-                                </a>
+                                </router-link>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                     </SidebarMenu>

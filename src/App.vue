@@ -1,5 +1,6 @@
 <script setup>
 import Toaster from '@/components/ui/toast/Toaster.vue'
+import Layout from '@/views/layout/index.vue';
 import { useLocalCache } from './hooks/useLocalCache';
 import { onMounted } from 'vue';
 import { useUserStore } from './stores/user';

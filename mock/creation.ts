@@ -1,4 +1,52 @@
 import mockJS from "mockjs";
+import { cloneVNode } from "vue";
+const STABLE_MEDIA = {
+  video: [
+    "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+    "https://raw.githubusercontent.com/guilhermecapitao/test-media/main/videos/sample-5s.mp4",
+    "https://storage.googleapis.com/web-dev-assets/video-and-source-tags/chrome.mp4",
+    "https://www.html5rocks.com/en/tutorials/video/basics/devstories.mp4",
+    "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
+  ],
+  audio: [
+    "https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3",
+    "https://raw.githubusercontent.com/guilhermecapitao/test-media/main/audios/sample-3s.mp3",
+    "https://storage.googleapis.com/web-dev-assets/media-blocking/rain.mp3",
+    "https://assets.mixkit.co/active_storage/sfx/257/257-preview.mp3",
+    "https://sample-videos.com/zip/10/mp3/SampleAudio_0.5mb.mp3",
+  ],
+  image: [
+    // 1. 超宽屏 (16:9)
+    "https://picsum.photos/1600/900", // 16:9 比例
+
+    // 2. 方形 (1:1)
+    "https://picsum.photos/800/800", // 1:1 比例
+
+    // 3. 竖屏 (3:4)
+    "https://picsum.photos/600/800", // 3:4 比例
+
+    // 4. 超竖屏 (9:16)
+    "https://picsum.photos/450/800", // 9:16 比例
+
+    // 5. 宽屏 (4:3)
+    "https://picsum.photos/800/600", // 4:3 比例
+
+    // 6. 极端宽屏 (21:9)
+    "https://picsum.photos/2100/900", // 21:9 比例
+
+    // 7. 接近方形 (5:4)
+    "https://picsum.photos/750/600", // 5:4 比例
+
+    // 8. 竖长屏 (2:3)
+    "https://picsum.photos/400/600", // 2:3 比例
+
+    // 9. 宽屏 (3:2)
+    "https://picsum.photos/900/600", // 3:2 比例
+
+    // 10. 极端竖屏 (1:2)
+    "https://picsum.photos/300/600", // 1:2 比例
+  ],
+};
 export default [
   {
     url: "/api/output/creation",
@@ -8,7 +56,7 @@ export default [
         data: {
           code: 200,
           message: "successful",
-          list: mockJS.mock({
+          body: mockJS.mock({
             // 属性 list 的值是一个数组，其中含有 1 到 10 个元素
             "list|1-10": [
               {
@@ -30,59 +78,8 @@ export default [
                 date: '@date("yyyy-MM-dd")',
                 // 随机生成头像
                 avatar: "@image('200x200')",
-                media: {
-                  id: "@id",
-                  name: '@ctitle(2, 10).@pick(["mp4", "avi", "mov", "mkv", "mp3", "wav", "aac"])',
-                  title: "@ctitle(4, 12)",
-                  url: function () {
-                    const formats = {
-                      video: ["mp4", "avi", "mov", "mkv"],
-                      audio: ["mp3", "wav", "aac", "flac"],
-                    };
-                    const ext = this.name.split(".").pop();
-                    const type = formats.video.includes(ext)
-                      ? "video"
-                      : "audio";
-                    const providers = {
-                      video: [
-                        'https://vimeo.com/@string("number", 8)',
-                        'https://youtube.com/watch?v=@string("lower", 11)',
-                        'https://dailymotion.com/video/@string("lower", 7)',
-                        'https://example.com/video/@date("yyyyMMdd")/@string("lower", 10).mp4',
-                      ],
-                      audio: [
-                        "https://soundcloud.com/@word(5)/@word(8)",
-                        'https://podcast.example.com/episodes/@string("number", 6).mp3',
-                        'https://music.163.com/song/media/outer/url?id=@string("number", 9).mp3',
-                      ],
-                    };
-                    return mockJS.Random.pick(providers[type]);
-                    //   return `https://media.example.com/${type}s/${mockJS.Random.string(
-                    //     "lower",
-                    //     10
-                    //   )}.${ext}`;
-                  },
-                  // 视频服务商模板
-                  // videoUrl: function () {
-                  //   const providers = [
-                  //     'https://vimeo.com/@string("number", 8)',
-                  //     'https://youtube.com/watch?v=@string("lower", 11)',
-                  //     'https://dailymotion.com/video/@string("lower", 7)',
-                  //     'https://example.com/video/@date("yyyyMMdd")/@string("lower", 10).mp4',
-                  //   ];
-                  //   return mockJS.Random.pick(providers);
-                  // },
-                  // // 音频服务商模板
-                  // audioUrl: function () {
-                  //   const providers = [
-                  //     "https://soundcloud.com/@word(5)/@word(8)",
-                  //     'https://podcast.example.com/episodes/@string("number", 6).mp3',
-                  //     'https://music.163.com/song/media/outer/url?id=@string("number", 9).mp3',
-                  //   ];
-                  //   return mockJS.Random.pick(providers);
-                  // },
-                  //   thumbnail: '@image("300x200", "#4A90E2", "Preview")',
-                  //   createdAt: "@datetime",
+                url: function () {
+                  return mockJS.Random.pick(STABLE_MEDIA["image"]);
                 },
               },
             ],
