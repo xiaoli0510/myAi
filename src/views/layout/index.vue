@@ -6,7 +6,7 @@ import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 <template>
     <SidebarProvider>
         <AppSidebar />
-        <main>
+        <main class="h-screen">
             <SidebarTrigger />
             <router-view></router-view>
         </main>
